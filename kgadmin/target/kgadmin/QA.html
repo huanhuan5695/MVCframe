@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>QA</title>
+<link rel="stylesheet" type="text/css" href="ui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="ui/themes/icon.css">
+<script type="text/javascript" src="ui/jquery.min.js"></script>
+<script type="text/javascript" src="ui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="ui/locale/easyui-lang-en.js"></script>
+<script type="text/javascript" src="ui/jquery.serializejson.min.js"></script>
+<script type="text/javascript" src="js/qa.js"></script>
+<link rel="stylesheet" href="js/kindeditor/themes/default/default.css" />
+<link rel="stylesheet" href="js/kindeditor/plugins/code/prettify.css" />
+<script charset="utf-8" src="js/kindeditor/kindeditor-all.js"></script>
+<script charset="utf-8" src="js/kindeditor/lang/zh-CN.js"></script>
+<script charset="utf-8" src="js/kindeditor/plugins/code/prettify.js"></script>
+<script type="text/javascript">
+	var name="qa";
+	var columns=[[
+	  		    {field:'id',title:'ID',width:100},
+	  		    {field:'product',title:'Product',width:100},
+	  		    {field:'question',title:'Question',width:100},
+	  		    {field:'component',title:'component',width:100},
+	  		    {field:'firstIntent',title:'firstIntent',width:100},
+	  		    {field:'secondIntent',title:'secondIntent',width:100},
+	  		    {field:'thirdIntent',title:'thirdIntent',width:100},
+	  		    {field:'phrase',title:'phrase',width:100},
+	  		  /* {field:'answer',title:'answer',width:100}, */
+	  		  	
+	  		  {field:'--',title:'answer',width:200,formatter:function(value,row,index)
+			    	{
+			    		return "<a href='#' onclick='kindeditor("+row.id+")'>Description</a>";
+			    	}},
+			    {field:'-',title:'Operation',width:200,formatter:function(value,row,index)
+			    	{
+			    		return "<a href='#' onclick='edit("+row.id+")'>Edit</a> <a href='#' onclick='dele("+row.id+")'>Del</a>";
+			    	}}		    
+			          ]];
+	
+			KindEditor.ready(function(K) {
+				    editor = K.create('textarea[name="answer"]', {
+					cssPath : 'js/kindeditor/plugins/code/prettify.css',
+					uploadJson : 'js/kindeditor/jsp/upload_json.jsp',
+					fileManagerJson : 'js/kindeditor/jsp/file_manager_json.jsp',
+					allowFileManager : true,
+					afterCreate : function() {
+						var self = this;
+						K.ctrl(document, 13, function() {
+							self.sync();
+							document.forms['editForm'].submit();
+						});
+						K.ctrl(self.edit.doc, 13, function() {
+							self.sync();
+							document.forms['editForm'].submit();
+						});
+					}
+				});
+				prettyPrint();
+			});
+			KindEditor.ready(function(K) {
+			    editorShow = K.create('textarea[name="answerShow"]', {
+				cssPath : 'js/kindeditor/plugins/code/prettify.css',
+				uploadJson : 'js/kindeditor/jsp/upload_json.jsp',
+				fileManagerJson : 'js/kindeditor/jsp/file_manager_json.jsp',
+				allowFileManager : true,
+				/* afterCreate : function() {
+					var self = this;
+					K.ctrl(document, 13, function() {
+						self.sync();
+						document.forms['editForm'].submit();
+					});
+					K.ctrl(self.edit.doc, 13, function() {
+						self.sync();
+						document.forms['editForm'].submit();
+					});
+				} */
+			});
+			prettyPrint();
+		});
+    /**
+     * kindeditor show and edit
+     */
+    function kindeditor(id) {
+        $('#kindeditorWindow').window('open');
+        $('#kindeditorForm').form('clear');
+        $.ajax({
+            url: name + '/query?id=' + id,
+            dataType: 'json',
+            success: function (value) {
+                editorShow.html(value.answer);
+            }
+        });
+    }
+
+</script>
+</head>
+<body>
+<div class="easyui-panel">
+<form id="searchForm">
+	product：<input name="product" >
+	question：<input name="question" >
+	component：<input name="component" >
+	firtst_intent：<input name="firstIntent" >
+	second_intent：<input name="secondIntent" >
+	third_intent：<input name="thirdIntent" >
+	phrase：<input name="phrase" >
+	answer：<input name="answer" >
+
+	<button type="button" id="btnSearch">Search</button>
+</form>
+</div>
+<table id="grid"></table>
+<div id="editWindow" class="easyui-window" title="Edit"
+	style="width: 500px;height: 500px" data-options="closed:true">
+	<form id="editForm">
+	<input name="id" type="hidden"> 
+
+		<table>
+			<tr>
+				<td>product</td><td><input name="product"> </td>
+			</tr>
+			<tr>
+				<td>question</td><td><input name="question"> </td>
+			</tr>
+			<tr>
+				<td>component</td><td><input name="component"> </td>
+			</tr>
+			<tr>
+				<td>firstIntent</td><td><input name="firstIntent"> </td>
+			</tr>
+			<tr>
+				<td>secondIntent</td><td><input name="secondIntent"> </td>
+			</tr>
+			<tr>
+				<td>thirdIntent</td><td><input name="thirdIntent"> </td>
+			</tr>
+			<tr>
+				<td>phrase</td><td><input name="phrase"> </td>
+			</tr>
+
+		
+		<tr>
+			<td>answer</td><td><textarea id="kindeditor" name="answer" cols="100" rows="8" style="width:500px;height:200px;visibility:hidden;"></textarea></td>
+		</tr>
+		</table>
+		<button id="btnSave" type="button">Save</button>
+	</form>
+</div>
+<div id="kindeditorWindow" class="easyui-window" title="answer" 
+	style="width: 700px;height: 400px" data-options="closed:true">
+	<form name="kindeditorForm">
+		<textarea name="answerShow" cols="100" rows="8" style="width:700px;height:400px;visibility:hidden;"></textarea>
+		<!-- <br />
+		<input type="submit" name="button" value="提交内容" /> (提交快捷键: Ctrl + Enter) -->
+	</form>
+</div>
+</body>
+</html>

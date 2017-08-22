@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Management</title>
+<link rel="stylesheet" type="text/css" href="ui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="ui/themes/icon.css">
+<script type="text/javascript" src="ui/jquery.min.js"></script>
+<script type="text/javascript" src="ui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="ui/locale/easyui-lang-en.js"></script>
+<script type="text/javascript" src="ui/jquery.serializejson.min.js"></script>
+<script type="text/javascript" src="js/crud.js"></script>
+<script type="text/javascript">
+	var name="repairstation";
+	var columns=[[
+	  		    {field:'id',title:'ID',width:100},
+	  		    {field:'stationname',title:'stationname',width:100},
+	  		    {field:'repairlevel',title:'repairlevel',width:100},
+	  		    {field:'worktime',title:'worktime',width:100},
+	  		    {field:'status',title:'status',width:100},
+	  		    {field:'vendor',title:'vendor',width:100},
+	  			{field:'brand',title:'brand',width:100},
+	  			{field:'globalcodegroupid',title:'globalcodegroupid',width:100},
+	  			{field:'authorizedproductlines',title:'authorizedproductlines',width:100},
+	  			{field:'countryname',title:'countryname',width:100},
+	  			{field:'region',title:'region',width:100},
+	  			{field:'city',title:'city',width:100},
+	  			{field:'streetaddress',title:'streetaddress',width:100},
+	  			{field:'latitude',title:'latitude',width:100},
+	  			{field:'longitude',title:'longitude',width:100},
+	  			{field:'destinationstation',title:'destinationstation',width:100},
+	  			{field:'coveragearea',title:'coveragearea',width:100},
+	  			{field:'tz',title:'tz',width:100},
+	  			{field:'stationtype',title:'stationtype',width:100},
+	  			{field:'staffStaffname',title:'staffStaffname',width:100},
+	  			{field:'staffTelephone',title:'staffTelephone',width:100},
+	  			{field:'staffEmail',title:'staffEmail',width:100},
+
+			    {field:'-',title:'Operation',width:200,formatter:function(value,row,index)
+			    	{
+			    		return "<a href='#' onclick='edit("+row.id+")'>Edit</a> <a href='#' onclick='dele("+row.id+")'>Del</a>";
+			    	}}		    
+			          ]];
+
+</script>
+</head>
+<body>
+<div class="easyui-panel">
+<form id="searchForm">
+	StationName：<input name="stationname" >
+	RepairLevel：<input name="repairlevel" >
+	WorkTime：<input name="worktime" >
+	status：<input name="status" >
+	vendor：<input name="vendor" >
+	brand：<input name="brand" >
+	globalcodegroupid：<input name="globalcodegroupid" >
+	authorizedproductlines：<input name="authorizedproductlines" >
+	countryname：<input name="countryname" >
+	region：<input name="region" >
+	city：<input name="city" >
+	streetaddress：<input name="streetaddress" >
+	latitude：<input name="latitude" >
+	longitude：<input name="longitude" >
+	destinationstation：<input name="destinationstation" >
+	coveragearea：<input name="coveragearea" >
+	tz：<input name="tz" >
+	stationtype：<input name="stationtype" >
+	staffStaffname：<input name="staffStaffname" >
+	staffTelephone：<input name="staffTelephone" >
+	staffEmail：<input name="staffEmail" >
+
+	<button type="button" id="btnSearch">Search</button>
+</form>
+</div>
+<table id="grid"></table>
+<div id="editWindow" class="easyui-window" title="Edit"
+	style="width: 500px;height: 400px" data-options="closed:true">
+	<form id="editForm">
+	<input name="id" type="hidden"> 
+
+		<table>
+			<tr>
+				<td>station name</td><td><input name="stationname"> </td>
+			</tr>
+			<tr>
+				<td>repair level</td><td><input name="repairlevel"> </td>
+			</tr>
+			<tr>
+				<td>work time</td><td><input name="worktime"> </td>
+			</tr>
+			<tr>
+				<td>status</td><td><input name="status"> </td>
+			</tr>
+			<tr>
+				<td>vendor</td><td><input name="vendor"> </td>
+			</tr>
+			<tr>
+				<td>brand</td><td><input name="brand"> </td>
+			</tr>
+			<tr>
+				<td>globalcodegroupid</td><td><input name="globalcodegroupid"> </td>
+			</tr>
+			<tr>
+				<td>authorizedproductlines</td><td><input name="authorizedproductlines"> </td>
+			</tr>
+			<tr>
+				<td>countryname</td><td><input name="countryname"> </td>
+			</tr>
+			<tr>
+				<td>region</td><td><input name="region"> </td>
+			</tr>
+			<tr>
+				<td>city</td><td><input name="city"> </td>
+			</tr>
+			<tr>
+				<td>streetaddress</td><td><input name="streetaddress"> </td>
+			</tr>
+			<tr>
+				<td>latitude</td><td><input name="latitude"> </td>
+			</tr>
+			<tr>
+				<td>longitude<td><input name="longitude"> </td>
+			</tr>
+			<tr>
+				<td>destinationstation</td><td><input name="destinationstation"> </td>
+			</tr>
+			<tr>
+				<td>coveragearea</td><td><input name="coveragearea"> </td>
+			</tr>
+			<tr>
+				<td>tz</td><td><input name="tz"> </td>
+			</tr>
+			<tr>
+				<td>stationtype</td><td><input name="stationtype"> </td>
+			</tr>
+			<tr>
+				<td>staffStaffname</td><td><input name="staffStaffname"> </td>
+			</tr>
+			<tr>
+				<td>staffTelephone</td><td><input name="staffTelephone"> </td>
+			</tr>
+			<tr>
+				<td>staffEmail</td><td><input name="staffEmail"> </td>
+			</tr>
+
+		</table>	
+		<button id="btnSave" type="button">Save</button>
+	</form>
+</div>
+
+</body>
+</html>

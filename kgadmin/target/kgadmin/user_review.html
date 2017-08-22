@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>管理</title>
+<link rel="stylesheet" type="text/css" href="ui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="ui/themes/icon.css">
+<script type="text/javascript" src="ui/jquery.min.js"></script>
+<script type="text/javascript" src="ui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="ui/locale/easyui-lang-en.js"></script>
+<script type="text/javascript" src="ui/jquery.serializejson.min.js"></script>
+<script type="text/javascript" src="js/user_review.js"></script>
+<script type="text/javascript" src="js/date.js"></script>
+<script type="text/javascript">
+	var name="user";
+
+	var columns1=[[
+	  		    {field:'id',title:'编号',width:100,sortable:true,order:"asc"},
+	  		    {field:'name',title:'姓名',width:100},
+        		{field:'email',title:'邮箱',width:100},
+	  		    {field:'password',title:'密码',width:100},
+	  		    {field:'description',title:'描述',width:100},
+	  		    {field:'creattime',title:'申请时间',width:100,formatter:function(value){
+                    return new Date(value).Format('yyyy-MM-dd');
+                }},
+
+			    {field:'-',title:'操作',width:250,formatter:function(value,row,index)
+			    	{
+			    		return "<label><input name=\"roleid"+index+"\" type=\"radio\" value=\"3\" />KE </label>" +
+                            "<label><input name=\"roleid"+index+"\" type=\"radio\" value=\"2\" />Agent </label>" +
+                            "<label><input name=\"roleid"+index+"\" type=\"radio\" value=\"1\" />Viewer </label>"+
+							"<button id='btnSave' onclick=\"review("+row.id+","+index+")\" type='button'>OK</button>";
+
+			    	}}		    
+			          ]];
+    var columns = columns1;
+
+    var columns2=[[
+        {field:'id',title:'编号',width:100,sortable:true,order:"asc"},
+        {field:'name',title:'姓名',width:100},
+        {field:'email',title:'邮箱',width:100},
+        {field:'password',title:'密码',width:100},
+        {field:'description',title:'描述',width:100},
+        {field:'creattime',title:'申请时间',width:100,formatter:function(value){
+            return new Date(value).Format('yyyy-MM-dd');
+        }},
+        {field:'approvetime',title:'审批时间',width:100,formatter:function(value){
+            return new Date(value).Format('yyyy-MM-dd');
+        }},
+        {field:'roleid',title:'角色',width:100,formatter:function(value){
+            var rolename;
+            if(value==1){
+                rolename="Viewer";
+			}
+            if(value==2){
+                rolename="Agent";
+            }
+            if(value==3){
+                rolename="KE";
+            }
+            if(value==4){
+                rolename="Sysadmin";
+            }
+            return rolename;
+        }},
+
+        {field:'-',title:'操作',width:250,formatter:function(value,row,index)
+        {
+            return "<a href='#' onclick='edit("+row.id+")'>修改</a> <a href='#' onclick='dele("+row.id+")'>删除</a>";
+        }}
+    ]];
+
+
+	function review(id,index){
+        var radioname = "roleid"+index;
+        var roleid = $("input[name='roleid"+index+"']:checked").val();
+        $.ajax({
+            url:"user/update?id="+id+"&roleid="+roleid,
+            dataType:'json',
+            type:'get',
+            success:function(value){
+                if(value.success) {
+                    $("#grid").datagrid("deleteRow", index);
+                }
+			}
+
+        });
+	}
+
+	function reload(value){
+	    if(value==2){
+            //表格数据初始化
+            $('#grid').datagrid({
+                url:name+'/listR',
+                columns:columns2,
+                checkOnSelect:true,
+                pagination:true
+
+            });
+		}else if(value==1){
+            //表格数据初始化
+            $('#grid').datagrid({
+                url:name+'/listR',
+                columns:columns1,
+                checkOnSelect:true,
+                pagination:true
+
+            });
+		}
+	    $("#state").val(value);
+        var formdata= $('#searchForm').serializeJSON();
+        $('#grid').datagrid('load',formdata);
+    }
+
+
+</script>
+</head>
+<body>
+<div class="easyui-panel">
+<form id="searchForm">
+	姓名：<input name="name" >
+		 <input id="state" name="state" type="hidden">
+	<button type="button" id="btnSearch">查询</button>
+
+	<div id="tb" style="padding:5px;height: auto;">
+		<div>
+<!--			<input class="easyui-combobox" style="width:100px"
+				   url="data/combobox_data.json"
+				   valueField="id" textField="text">-->
+			<!--<select id="cc" class="easyui-combobox" name="state" style="width:100px;">-->
+				<!--<option value="1" >待授权</option>-->
+				<!--<option value="2" >已授权</option>-->
+			<!--</select>-->
+
+			<select id="dd" name="state" onchange="reload(this.value)" style="width:100px;">
+				<option value="1" >待授权</option>
+				<option value="2" >已授权</option>
+			</select>
+
+		</div>
+	</div>
+
+</form>
+</div>
+<table id="grid" toolbar="#tb"></table>
+
+<div id="editWindow" class="easyui-window" title="编辑"
+	 style="width: 300px;height: 200px" data-options="closed:true">
+	<form id="editForm">
+		<input name="id" type="hidden">
+
+		<table>
+			<tr>
+				<td>姓名</td><td><input name="name"></td>
+
+			</tr>
+			<tr>
+				<td>角色</td>
+				<td>
+				<input type="radio" name="roleid" value="3">KE
+				<input type="radio" name="roleid" value="2">Agent
+				<input type="radio" name="roleid" value="1">Viewer
+				</td>
+			</tr>
+
+		</table>
+		<button id="btnSave" type="button">保存</button>
+	</form>
+</div>
+</body>
+</html>
